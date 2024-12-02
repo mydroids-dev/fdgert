@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .title-section {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .upload-container {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            text-align: center;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        .upload-format {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: #007BFF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .links a:hover {
+            color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        p {
+            text-align: center;
+            color: #666;
+        }
+        .message {
+            text-align: center;
+            color: red; /* Adjust color based on importance (e.g., error, info) */
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-section">
+        <h1>VIP Booking Management</h1>
+    </div>
+    <div class="upload-container">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required />
+            <button type="submit">Upload</button>
+            <div class="upload-format">Accepted formats: .csv, .xlsx</div>
+        </form>
+    </div>
+    <div class="links">
+        <a href="/maturity-list">View Maturity List</a>
+        <a href="/delivery-done">View Delivery Done List</a>
+    </div>
+
+    <!-- Message block for informing users -->
+    <% if (typeof message !== 'undefined' && message) { %>
+        <div class="message"><%= message %></div>
+    <% } %>
+
+    <% if (bookings && bookings.length > 0) { %>
+        <h2>Uploaded Booking History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>S.N.</th>
+                    <th>Associate Name</th>
+                    <th>Customer Name</th>
+                    <th>Customer ID</th>
+                    <th>Deposit Date</th>
+                    <th>Deposit Amount</th>
+                    <th>Maturity Amount</th>
+                    <th>UTR/IMPS Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% bookings.forEach((booking, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= booking["ASSOCIATE NAME"] %></td>
+                        <td><%= booking["CUSTOMER NAME"] %></td>
+                        <td><%= booking["CUSTOMER ID"] %></td>
+                        <td><%= booking["DEPOSIT DATE"] %></td>
+                        <td><%= booking["DEPOSIT AMOUNT"] %></td>
+                        <td><%= booking["MATURITY AMOUNT"] %></td>
+                        <td><%= booking["UTR/IMPS NUMBER"] %></td>
+                        <td>
+                            <form action="/delete-booking" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= booking["CUSTOMER ID"] %>">
+                                <button type="submit" style="background-color:red; color:white;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No booking history uploaded yet.</p>
+    <% } %>
+</body>
+</html>

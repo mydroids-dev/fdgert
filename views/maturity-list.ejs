@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Maturity List</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dddddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button.claim {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button.claim:hover {
+            background-color: #45a049;
+        }
+        button.delete {
+            background-color: red;
+            color: white;
+        }
+        button.delete:hover {
+            background-color: darkred;
+        }
+        a {
+            text-decoration: none;
+            color: #007BFF;
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maturity List</h1>
+    <table>
+        <tr>
+            <th>S.N.</th>
+            <th>Associate Name</th>
+            <th>Customer Name</th>
+            <th>Customer ID</th>
+            <th>Deposit Date</th>
+            <th>Deposit Amount</th>
+            <th>Maturity Amount</th>
+            <th>UTR/IMPS Number</th>
+            <th>Action</th>
+        </tr>
+        <% bookings.forEach((booking, index) => { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= booking["ASSOCIATE NAME"] %></td>
+                <td><%= booking["CUSTOMER NAME"] %></td>
+                <td><%= booking["CUSTOMER ID"] %></td>
+                <td><%= booking["DEPOSIT DATE"] %></td>
+                <td><%= booking["DEPOSIT AMOUNT"] %></td>
+                <td><%= booking["MATURITY AMOUNT"] %></td>
+                <td><%= booking["UTR/IMPS NUMBER"] %></td>
+                <td>
+                    <div class="action-buttons">
+                        <form action="/claim-now" method="POST">
+                            <input type="hidden" name="id" value="<%= booking["CUSTOMER ID"] %>">
+                            <button type="submit" class="claim">Claim Now</button>
+                        </form>
+                        <form action="/delete-maturity" method="POST">
+                            <input type="hidden" name="id" value="<%= booking["CUSTOMER ID"] %>">
+                            <button type="submit" class="delete">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+    <a href="/">Go to Home</a>
+</body>
+</html>

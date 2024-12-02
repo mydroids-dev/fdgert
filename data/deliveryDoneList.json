@@ -1,0 +1,23 @@
+[
+  {
+    "deliveryNo": "VIP1",
+    "customerName": "BADAKALA LALITHA KUMARI",
+    "customerId": "CUS007762",
+    "maturityUtr": "0601546F1397",
+    "maturityAmount": "80000"
+  },
+  {
+    "deliveryNo": "VIP2",
+    "customerName": "VANDANA KUMARI",
+    "customerId": "CUS005574",
+    "maturityUtr": "0601546F1397",
+    "maturityAmount": "120000"
+  },
+  {
+    "deliveryNo": "VIP3",
+    "customerName": "VANDANA KUMARI",
+    "customerId": "CUS005574",
+    "maturityUtr": "0601546F1397",
+    "maturityAmount": "140000"
+  }
+]

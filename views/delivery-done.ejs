@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Payment Slip - Shreya Group of Company</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            max-width: 120px; /* Adjust logo size */
+        }
+
+        /* Print Slip Modal */
+        #print-slip {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1000;
+            overflow: auto;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .print-content {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .print-content h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        button {
+            background-color: #28a745; /* Green */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin: 5px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="header" style="text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #333;">
+        <img src="/logo.png" alt="Shreya Group of Company Logo" style="max-width: 150px;">
+        <h1 style="font-size: 24px; color: #333; margin: 20px 0;">VIP Payment Slip</h1>
+    </div>
+
+    <% if (deliveries.length > 0) { %>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background: white;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Delivery No.</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Customer Name</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Customer ID</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Maturity UTR</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Maturity Amount</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Action</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Print Slip</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% deliveries.forEach((delivery) => { %>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><%= delivery.deliveryNo %></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><%= delivery.customerName %></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><%= delivery.customerId %></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><%= delivery.maturityUtr %></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><%= delivery.maturityAmount %></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">
+                            <form action="/delete-delivery" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= delivery.customerId %>">
+                                <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px;">Delete</button>
+                            </form>
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">
+                            <button onclick="printSlip(<%= JSON.stringify(delivery) %>, <%= JSON.stringify(bookings) %>)" style="background-color: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px;">Print Slip</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p style="text-align: center; color: #666;">No delivery records available.</p>
+    <% } %>
+</body>
+
+    <!-- Print Slip Modal -->
+    <div id="print-slip">
+        <div class="print-content" id="slip-content">
+            <h2>VIP Payment Slip</h2>
+            <div id="delivery-details" style="margin-bottom: 20px;"></div>
+            <h3>Booking History:</h3>
+            <div id="booking-details"></div>
+            <button onclick="printContent()">Print</button>
+            <button onclick="closeSlip()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function printSlip(delivery, bookings) {
+            // Prepare delivery details
+            const deliveryDetails = `
+                <strong>Delivery No.:</strong> ${delivery.deliveryNo} <br>
+                <strong>Customer Name:</strong> ${delivery.customerName} <br>
+                <strong>Customer ID:</strong> ${delivery.customerId} <br>
+                <strong>Maturity UTR:</strong> ${delivery.maturityUtr} <br>
+                <strong>Maturity Amount:</strong> ${delivery.maturityAmount} <br>
+                <strong>Date:</strong> ${new Date().toLocaleDateString()} <br>
+            `;
+            document.getElementById('delivery-details').innerHTML = deliveryDetails;
+
+            // Prepare booking details in non-tabular format
+            let bookingDetails = "";
+            bookings.forEach((booking, index) => {
+                bookingDetails += `
+                    <strong>S.N.:</strong> ${index + 1} <br>
+                    <strong>Associate Name:</strong> ${booking["ASSOCIATE NAME"]} <br>
+                    <strong>Customer Name:</strong> ${booking["CUSTOMER NAME"]} <br>
+                    <strong>Customer ID:</strong> ${booking["CUSTOMER ID"]} <br>
+                    <strong>Deposit Date:</strong> ${booking["DEPOSIT DATE"]} <br>
+                    <strong>Deposit Amount:</strong> ${booking["DEPOSIT AMOUNT"]} <br>
+                    <strong>Maturity Amount:</strong> ${booking["MATURITY AMOUNT"]} <br>
+                    <strong>UTR/IMPS Number:</strong> ${booking["UTR/IMPS NUMBER"]} <br><br>
+                `;
+            });
+            document.getElementById('booking-details').innerHTML = bookingDetails;
+
+            // Show the print slip
+            document.getElementById('print-slip').style.display = 'block';
+        }
+
+        function closeSlip() {
+            document.getElementById('print-slip').style.display = 'none';
+        }
+
+        function printContent() {
+            const slipContent = document.getElementById('slip-content');
+            const originalContent = document.body.innerHTML;
+
+            document.body.innerHTML = slipContent.innerHTML;
+            window.print();
+            document.body.innerHTML = originalContent; // Restore original content
+            closeSlip();
+        }
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('print-slip');
+            if (event.target === modal) {
+                closeSlip();
+            }
+        });
+    </script>
+
+    <div class="footer">
+        © 2023 Shreya Group of Company. All Rights Reserved.
+    </div>
+</body>
+</html>
