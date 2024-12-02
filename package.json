@@ -1,22 +1,21 @@
 {
-  "name": "excel_upload_project",
+  "name": "fdgert",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js", // the entry point of your application
+  "bin": "app.js", // the main file that runs your app
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "build": "pkg ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "body-parser": "^1.20.3",
-    "dotenv": "^16.4.5",
-    "ejs": "^3.1.10",
-    "express": "^4.21.1",
-    "express-ejs-layouts": "^2.5.1",
-    "mongoose": "^8.8.3",
-    "multer": "^1.4.5-lts.1",
-    "xlsx": "^0.18.5"
-  }
+  "pkg": {
+    "targets": [
+      "node14-win-x64"  // Adjust this according to your Node.js version
+    ],
+    "assets": [
+      "views/**/*",
+      "public/**/*",
+      "data/**/*"
+    ]
+  },
+  // other keys like dependencies ...
 }
